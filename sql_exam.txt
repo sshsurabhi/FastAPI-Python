@@ -1,0 +1,388 @@
+Evaluation Render Preview
+
+
+
+Exam 142
+
+SQL Language
+
+Instructions
+
+The exam is composed of 2 exercises. The first one consists in creating a database and manipulating information on this database. The second consists in connecting to a database gathering information about movies referenced on the site IMDB and retrieving information from this database. The exercises are independent of each other.
+
+If you have any problems, please consult our support page.
+
+(a) Run the following cell to allow the notebook to understand the SQL language.
+%load_ext sql
+%config SqlMagic.displaycon = False
+%config SqlMagic.feedback = False
+%config SqlMagic.displaylimit = 50
+  Warning : If you want to run SQL in a cell, you must have the %%sql command at the beginning of it.
+1. Exercise 1
+(b) Run the following cell to connect to an empty database named Distributor.db.
+%sql sqlite:///Distributeur.db
+(c) Create a table Drinks(DrinkId, Name, Size, Price) and choose the appropriate primary key. You will need to justify your answer.
+  The capacity of the drinks is in cl.
+%%sql
+create table Drinks(
+    DrinkId integer,
+    Name varchar,
+    Size integer,
+    Price float,
+    primary key (DrinkId)
+);
+(sqlite3.OperationalError) table Drinks already exists
+[SQL: create table Drinks( DrinkId integer,
+    Name varchar,
+    Size integer,
+    Price float,
+    primary key (DrinkId)
+);]
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+%%sql
+Select * From Drinks;
+DrinkId	Name	Size	Price
+(d) Add the following tuples (1, Coca, 33, 0.99) , (2, Perrier, 100, 2) , (3, Perrier, 33, 1), (4, Vittel, 150, 1.50) , (5, Badoit, 50, 2) to the table Drinks.
+%%sql
+Insert into Drinks (DrinkID, Name, Size, Price)
+Values (1, 'Coca', 33, 0.99),
+(2, 'Perrier', 100, 2),
+(3, 'Perrier', 33, 1),
+(4, 'Vittel', 150, 1.50),
+(5, 'Badoit', 50, 2);
+[]
+(e) Create a table Invoices(InvoiceId,DrinkId,Hour). You need to refer to a primary key of the table Drinks.
+%%sql
+create table Invoices(
+InvoiceId integer,
+DrinkId integer,
+Hour Time,
+foreign key(DrinkId) references Drinks(DrinkId)
+)
+[]
+(f) Add the tuples (1,1,7), (2,1,8) , (3,4,12) to the table Invoices.
+%%sql
+
+Insert into Invoices 
+values (1,1,7),
+(2,1,8) , 
+(3,4,12)
+[]
+%%sql
+
+select * from Drinks
+DrinkId	Name	Size	Price
+1	Coca	33	0.99
+2	Perrier	100	2.0
+3	Perrier	33	1.0
+4	Vittel	150	1.5
+5	Badoit	50	2.0
+%%sql
+
+select * from Invoices
+InvoiceId	DrinkId	Hour
+1	1	7
+2	1	8
+3	4	12
+(g) Can we delete the Drinks table? Explain the answer.
+"""
+No, we cannot delete the Drinks table because Invoices table has a foreign key relationship with Drinks table
+"""
+(h) Can we add the tuple (1,Sprite,50,1) to the table Drinks ? Explain the answer.
+"""
+No, we cannot add this tuple to Drinks table because, there is already a row with DrinkId = 1
+"""
+(i) Give, in SQL language, the query allowing to know which drinks of the beverage vending machine were not sold since its installation, then execute it. (We can use NOT IN to check that a column does not belong to a table.)
+%%sql
+select * from Drinks
+where DrinkId not in (select distinct Drinkid from Invoices)
+DrinkId	Name	Size	Price
+2	Perrier	100	2.0
+3	Perrier	33	1.0
+5	Badoit	50	2.0
+%%sql
+select *
+from Drinks d
+left join Invoices i
+on d.drinkid = i.drinkid
+group by d.drinkid, d.Name
+DrinkId	Name	Size	Price	InvoiceId	DrinkId_1	Hour
+1	Coca	33	0.99	1	1	7
+2	Perrier	100	2.0	None	None	None
+3	Perrier	33	1.0	None	None	None
+4	Vittel	150	1.5	3	4	12
+5	Badoit	50	2.0	None	None	None
+(j) With a SQL query that shows the proportion of the various drinks that have been sold in the vending machine.
+Hint: We can use GROUP BY to group the different drinks. The number of drinks present in the Invoices table corresponds to the number of tuples added in question (e).)
+
+%%sql
+
+
+select d.drinkid, d.Name, Count(i.invoiceid) as salescount, (count(i.invoiceid)*1.0/(select count(*) from Invoices)) as proportions 
+from Drinks d
+left join Invoices i
+on d.drinkid = i.drinkid
+group by d.drinkid, d.Name
+DrinkId	Name	salescount	proportions
+1	Coca	2	0.6666666666666666
+2	Perrier	0	0.0
+3	Perrier	0	0.0
+4	Vittel	1	0.3333333333333333
+5	Badoit	0	0.0
+(k) Delete both tables.
+%%sql
+
+Drop Table Drinks
+Drop Table Invoices
+(sqlite3.OperationalError) no such table: Drinks
+[SQL: Drop Table Drinks]
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+2. Exercise 2
+The newIMDB.db database is already loaded in your workspace. This database gathers the information of all the titles referenced on the site IMDB. It presents the characteristics of films, TV series and other types of production. Here are the details of the tables in this database:
+
+
+
+
+There is also an EPISODES table that we will not use here.
+
+(a) Run the following cell to connect to the database newIMDB.db.
+  Warning : If you want to go back to the first exercise later, you will have to rerun the cell to connect to the first database.
+%sql sqlite:///newIMDB.db
+(b) Using the following command, perform a first analysis of the database.
+%%sql
+
+SELECT 
+    name,sql
+FROM 
+    sqlite_schema
+WHERE 
+    type ='table' AND 
+    name NOT LIKE 'sqlite_%';
+name	sql
+people	CREATE TABLE people (
+person_id VARCHAR PRIMARY KEY,
+name VARCHAR,
+born INTEGER,
+died INTEGER
+)
+titles	CREATE TABLE titles (
+title_id VARCHAR PRIMARY KEY,
+type VARCHAR,
+primary_title VARCHAR,
+original_title VARCHAR,
+is_adult INTEGER,
+premiered INTEGER,
+ended INTEGER,
+runtime_minutes INTEGER,
+genres VARCHAR
+)
+crew	CREATE TABLE crew (
+title_id VARCHAR,
+person_id VARCHAR,
+category VARCHAR,
+job VARCHAR,
+characters VARCHAR
+)
+episodes	CREATE TABLE episodes (
+episode_title_id INTEGER,
+show_title_id INTEGER,
+season_number INTEGER,
+eposide_number INTEGER
+)
+ratings	CREATE TABLE ratings (
+title_id VARCHAR PRIMARY KEY,
+rating INTEGER,
+votes INTEGER
+)
+(c) How many titles are there per type? (Use the type attribute of the titles table.) The result must be alphabetically sorted.
+%%sql
+
+select type, count(*) as count from titles
+group by type
+order by type
+(d) What are the highest rated titles in the database? We will indicate the title (primary), the rating, and the number of votes. In order to make the selection representative, we will have to filter for titles with a number of voters > 5000. Sort the results first by rating in descending order, and then by number of votes. Limit the results to the first 10 lines.
+%%sql
+
+select ts.primary_title, rating, votes from ratings rt
+left join titles ts
+on rt.title_id = ts.title_id
+where votes > 5000
+order by rating desc, votes desc
+limit 10
+primary_title	rating	votes
+Hero	10	19740
+Battle of the Bastards	9.9	180753
+The Winds of Winter	9.9	125291
+Ozymandias	9.9	102198
+Hardhome	9.9	84378
+The Rains of Castamere	9.9	83391
+Felina	9.9	74451
+Vichnaya Pamyat	9.9	42239
+Mizumono	9.9	13862
+Midnight Sun	9.9	7470
+(e) What is the average rating of the titles by genre? The result must be alphabetically sorted and limited to the first 10 lines.
+%%sql
+
+select ts.genres, avg(rating) from ratings rt
+left join titles ts
+on rt.title_id = ts.title_id
+group by genres
+order by ts.primary_title 
+limit 10
+genres	avg(rating)
+Biography,Crime,Reality-TV	9.250000000000002
+Comedy,History,War	8.230107526881724
+Comedy,Documentary,Sci-Fi	8.6
+Documentary,Romance,Short	8.533333333333333
+Adventure,Comedy,Mystery	8.4775
+Adult,Romance,Sci-Fi	8.0
+Documentary,Sport,War	8.1
+Action,Music,Short	8.290909090909091
+Drama,Family,News	7.8
+Documentary,Sport,Western	8.3
+
+
+(f) What are the average ratings of the titles associated with the various directors (i.e. people whose job is like director, co-director, managing director, ... )? Sort the results first by average rating in descending order, and then alphabetically by name. Limit the results to the first 10 lines.
+  The keyword in the database for these groups of people is: director.
+
+%%sql
+
+select primary_title, AVG(rating) as avg_rating from titles ts
+left join ratings rt
+on ts.title_id = rt.title_id
+where ts.title_id in (select title_id from crew where category = 'director')
+group by primary_title
+order by avg_rating desc, primary_title
+primary_title	avg_rating
+#WEARESUPERIOR	10.0
+1 Percent	10.0
+30. Plitvice Marathon: USUSRET MARATONU	10.0
+30. Plitvice marathon	10.0
+311 Live: 3/11 Day 2006	10.0
+50 contre 1	10.0
+99 Breathings	10.0
+A 'Dreamlife'	10.0
+A Ballad of Solitude	10.0
+A Force for Good	10.0
+A Hand Up Is Not a Hand Out: Part 1	10.0
+A House with History	10.0
+A Journey in the Making	10.0
+A Minister Louis Farrakhan Special	10.0
+A New Girl Enters Dev's Life	10.0
+A Promise Kept	10.0
+A Touch of the Sun	10.0
+A Walk Down the Aisle	10.0
+Aafrika jõhkrad traditsioonid	10.0
+Addictive Reflection	10.0
+Adieus	10.0
+Aika pysähtyy	10.0
+Alborada	10.0
+Alibi Reed (Acoustic)	10.0
+Alke	10.0
+All Around Us	10.0
+All Japan for Peace and Coexistence: Gerbera Revolution	10.0
+All Sun and Little White Flowers	10.0
+All Venus No Penis	10.0
+All Venus No Penis 3	10.0
+Allegory	10.0
+Almost a Revolution by Shen Tong	10.0
+Alter Variations	10.0
+Ambivalent Hope: A Gun and a Prayer	10.0
+America Hurrah	10.0
+An Interview	10.0
+Another Day at the Office	10.0
+Another Love	10.0
+Arturo Benedetti Michelangeli	10.0
+As He Looked Into His Computer Screen	10.0
+Ass Blasting Felching Anal Whores	10.0
+Así empezó todo	10.0
+Atis	10.0
+Atlanta Battle	10.0
+Avantgarde Extreme 10 - Die teuflische Erfindung des Dr. Brainstorm	10.0
+Avantgarde Extreme 11 - Eine Sache des Blickwinkels	10.0
+Avantgarde Extreme 14 - Miam Miam, das Marsmädchen	10.0
+Ayaan apologizes to Dev	10.0
+Ayaan blackmails Dev	10.0
+Back in 1873	10.0
+162786 rows, truncated to displaylimit of 50
+(g) What are the titles on which Quentin Tarantino has worked? The answer must have the original title and its rating. The result must be sorted by rating in descending order, and limited to the first 10 lines.
+%%sql
+
+select original_title, rating from titles ts
+left join crew cr
+on ts.title_id = cr.title_id
+left join people pl
+on pl.person_id = cr.person_id
+left join ratings rt
+on rt.title_id = ts.title_id
+where pl.name='Quentin Tarantino'
+order by rating desc
+limit 10
+original_title	rating
+Once Upon a Time ... in Hollywood	9.6
+Quentin Tarantino	9.1
+Pulp Fiction	8.9
+The Director's Chair	8.9
+Kill Bill: The Whole Bloody Affair	8.8
+Grave Danger: Part 1	8.6
+Grave Danger: Part 2	8.6
+Quentin Tarantino/Paul Bettany/Spoon	8.5
+Quentin Tarantino	8.5
+Quentin Tarantino Vol. II	8.5
+%%sql
+
+select * from crew
+where category in ('actor', 'actress')
+limit 4
+title_id	person_id	category	job	characters
+tt0000376	nm0466448	actor	None	\N
+tt0000376	nm0617272	actress	None	["Salome"]
+tt0000376	nm0086082	actress	None	\N
+tt0000376	nm0632577	actress	None	\N
+%%sql
+
+select * from people limit 4
+person_id	name	born	died
+nm0000001	Fred Astaire	1899	1987
+nm0000002	Lauren Bacall	1924	2014
+nm0000003	Brigitte Bardot	1934	None
+nm0000004	John Belushi	1949	1982
+(h) Which are the actors or actresses who have obtained the highest ratings, for titles with more than 5000 votes? The category variable of the crew table determines the occupation of the individual to which the tuple is associated. Sort the results first by rating in descending order, and then alphabetically by actor/actress name. Limit the results to the first 10 lines.
+%%sql
+
+select pl.name, cr.category, rt.rating from titles ts
+left join ratings rt
+on ts.title_id = rt.title_id
+left join crew cr
+on cr.title_id = ts.title_id
+left join people pl
+on pl.person_id = cr.person_id
+where votes > 5000 and cr.category in ('actor', 'actress')
+order by rating desc, pl.name 
+limit 10
+name	category	rating
+Hiroshi Kamiya	actor	10
+Kenshô Ono	actor	10
+Kishô Taniyama	actor	10
+Marina Inoue	actress	10
+Ryôta Ôsaka	actor	10
+Tomohisa Hashizume	actor	10
+Yasuhiro Mamiya	actor	10
+Yoshimasa Hosoya	actor	10
+Yui Ishikawa	actress	10
+Yûki Kaji	actor	10
+(i) Write a query that shows the average rating for actresses and for actors. The result must have two rows, one for actresses and another for actors.
+%%sql
+
+select cr.category, AVG(rt.rating) as avg_rating from titles ts
+left join ratings rt
+on ts.title_id = rt.title_id
+left join crew cr
+on cr.title_id = ts.title_id
+left join people pl
+on pl.person_id = cr.person_id
+where cr.category in ('actor', 'actress')
+group by category
+category	avg_rating
+actor	8.35117081253064
+actress	8.361180128586287
