@@ -15,3 +15,66 @@ curl -X POST -u admin:4dm1N \
     -d "answerC=Paris" \
     -d "answerD=Rome" \
     http://127.0.0.1:8000/add-question
+
+    ########################################################
+    # Start the server
+uvicorn app:app --reload
+
+# Health check
+curl -X GET http://127.0.0.1:8000/
+
+#################################################################
+
+curl -X POST "http://127.0.0.1:8000/add-question/" \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic YWRtaW46NGRtMU4=" \
+-d '{
+    "question": "What is 2 + 2?",
+    "subject": "Math",
+    "correct": "4",
+    "use": "quiz",
+    "answerA": "4",
+    "answerB": "3",
+    "answerC": "5",
+    "answerD": "6"
+}'
+################################################################
+curl -X GET "http://127.0.0.1:8000/questions/" \
+-H "Authorization: Basic YWRtaW46NGRtMU4="
+
+##############################################################
+
+curl -X POST "http://127.0.0.1:8000/get-questions/" \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic YWxpY2U6d29uZGVybGFuZA==" \
+-d '{
+    "use": "quiz",
+    "subjects": ["Math", "Science"],
+    "count": 5
+}'
+
+###############################################################
+
+curl -X POST "http://127.0.0.1:8000/add-question/" \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic YWRtaW46NGRtMU4=" \
+-d '{
+    "question": "What is the capital of France?",
+    "subject": "Geography",
+    "correct": "Paris",
+    "use": "quiz",
+    "answerA": "Paris",
+    "answerB": "London",
+    "answerC": "Berlin",
+    "answerD": "Madrid"
+}'
+##############################################################
+curl -X POST "http://127.0.0.1:8000/get-questions/" \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic YWxpY2U6d29uZGVybGFuZA==" \
+-d '{
+    "use": "quiz",
+    "subjects": ["Geography"],
+    "count": 1
+}'
+###############################################################
