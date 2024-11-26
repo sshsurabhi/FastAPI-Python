@@ -1,0 +1,17 @@
+# Check API health
+curl http://127.0.0.1:8000/
+
+# Fetch 10 questions for "quiz" use and "math" or "science" subjects
+curl -u alice:wonderland "http://127.0.0.1:8000/questions?use=quiz&subjects=math&subjects=science&num_questions=10"
+
+# Add a question (as admin)
+curl -X POST -u admin:4dm1N \
+    -d "question=What is the capital of France?" \
+    -d "subject=geography" \
+    -d "correct=Paris" \
+    -d "use=quiz" \
+    -d "answerA=Berlin" \
+    -d "answerB=Madrid" \
+    -d "answerC=Paris" \
+    -d "answerD=Rome" \
+    http://127.0.0.1:8000/add-question
