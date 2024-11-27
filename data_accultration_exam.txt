@@ -1,0 +1,119 @@
+Evaluation Render Preview
+
+
+
+Review
+
+Acculturation Data
+
+The exercise is made up of 10 questions, do them in order. Feel free to contact the DataScientest team if you encounter any issues at help@datascientest.com
+
+For each question only one answer is possible. To pass the test, you must correctly answer at least 8 of the 10 questions.
+
+To answer a question, all you have to do is uncomment the answer(s) that seems right to you and execute the cell. If you want to change your answer, just uncomment another answer. If the question has a special rule, it will be indicated.
+
+Question 1:
+
+What is the role of a Data Engineer?
+
+Uncomment the answer that seems right to you then run the cell
+
+print("A) A Data Engineer is responsible for defining and implementing tools and architectures to process large volumes of data")
+
+#print("B) A Data Engineer is responsible for implementing big data processing algorithms")
+
+#print("C) A Data Engineer is responsible for defining the analysis models to be used to process raw data")
+
+#print("D) A Data Engineer is in charge of visualizing the data")
+Question 2:
+
+What is the role of the Data Manager in a Data team?
+
+Uncomment the answer that seems right to you then run the cell
+
+#print("A) A Data Manager oversees Machine Learning projects")
+
+print("B) A Data Manager must guarantee the accessibility, quality and compliance of data with certain standards")
+
+#print("C) A Data Manager takes care of analyzing data to produce key performance indicators")
+Question 3
+
+What distinguishes the Machine Learning Engineer from the Data Scientist?
+
+Uncomment the answer that seems right to you then run the cell
+
+print("A) The production of Machine Learning models")
+
+#print("B) Setting up data analysis models")
+
+#print("C) The Machine Learning Engineer does not touch Deep Learning techniques")
+Question 4:
+
+What can't be done using Data Visualization tools?
+
+Uncomment the answer that seems right to you then run the cell
+
+#print("A) Create interactive graphics for use on web pages")
+
+#print("B) Extract relevant information from a dataset")
+
+print("C) Predict the future value of a variable")
+Question 5:
+
+Classification is a supervised learning method?
+
+Uncomment the answer that seems right to you then run the cell
+
+print("A) True")
+
+#print("B) False")
+Question 6:
+
+We seek to identify similar groups of consumers. Are we in a case of supervised or unsupervised learning?
+
+Uncomment the answer that seems right to you then run the cell
+
+#print("A) Supervised Learning")
+
+print("B) Unsupervised Learning")
+Question 7:
+
+We try to predict whether a consumer will buy a product or not. What kind of situation are we in?
+
+Uncomment the answer that seems right to you then run the cell
+
+print("A) Classification")
+
+#print("B) Regression")
+
+#print("C) Unsupervised")
+Question 8:
+
+You want to translate a restaurant menu from a photo, what type(s) of Deep Learning model(s) do you need?
+
+Uncomment the answer that seems right to you then run the cell
+
+#print("A) Computer Vision")
+
+#print("B) Natural Language Processing")
+
+print("C) Both")
+Question 9:
+
+What is the main dilemma a Data Scientist has to face when choosing a model?
+
+Answer in a few sentences
+
+The performance-interpretability is essential in the choice of algorithm for a Data Scientist. The more an algorithm is efficient, the less it will beinterpretable.
+Sometimes, model complexity and its interpretation is confuses the data scientist.
+  File "<ipython-input-1-841f40f66506>", line 1
+    The performance-interpretability is essential in the choice of algorithm for a Data Scientist. The more an algorithm is efficient, the less it will beinterpretable.
+        ^
+SyntaxError: invalid syntax
+Question 10:
+
+What are the issues related to the use of AI in business?
+
+Answer in a few sentences
+
+Ethical Hacking, Privacy issues, Data Collection, Automation, Performance, Integration, Acceptancy.
